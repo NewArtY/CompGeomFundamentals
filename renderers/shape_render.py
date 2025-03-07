@@ -1,6 +1,3 @@
-from geometry.base import BaseGeoModel
-
-
 class RenderManager:
     _instance = None
 
@@ -11,6 +8,8 @@ class RenderManager:
         return cls._instance
 
     def __init__(self):
+        from geometry.base import BaseGeoModel
+
         if RenderManager._instance is not None:
             raise Exception("This class is a singleton!")
         else:

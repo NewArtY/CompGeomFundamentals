@@ -3,13 +3,27 @@ from renderers.shape_render import RenderManager
 
 class BaseModel:
     def __init__(self, color: tuple[int, int, int]):
-        self.color = color
+        self.__color = color
+        self.__visible = True
 
     def render(self, surface):
         pass  # Переопределяется в дочерних классах
 
-    def set_color(self, color: tuple[int, int, int]):
-        self.color = color
+    @property
+    def color(self):
+        return self.__color
+
+    @color.setter
+    def color(self, color: tuple[int, int, int]):
+        self.__color = color
+
+    @property
+    def visible(self):
+        return self.__visible
+
+    @visible.setter
+    def visible(self, visible: bool):
+        self.__visible = visible
 
 
 class BaseGeoModel(BaseModel):
@@ -18,7 +32,6 @@ class BaseGeoModel(BaseModel):
         self.manager.register(self)
         self.coors = self.__generalized_mod(kwargs.get('coors'))
         super().__init__(color=kwargs.get('color'))
-        self.visible = True
 
     @staticmethod
     def __generalized_mod(coors: tuple[tuple, ...]):
@@ -41,6 +54,12 @@ class BaseShapeModel(BaseModel):
         for shape in self.shapes:
             shape.render(surface)
 
-    def set_color(self, new_color: tuple[int, int, int]):
+    @BaseModel.color.setter
+    def color(self, color: tuple[int, int, int]):
         for shape in self.shapes:
-            shape.set_color(new_color)
+            shape.color = color
+
+    @BaseModel.visible.setter
+    def visible(self, visible: bool):
+        for shape in self.shapes:
+            shape.visible = visible
