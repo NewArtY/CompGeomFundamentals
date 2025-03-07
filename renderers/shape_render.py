@@ -1,3 +1,6 @@
+from geometry.base import BaseGeoModel
+
+
 class RenderManager:
     _instance = None
 
@@ -13,7 +16,7 @@ class RenderManager:
         else:
             RenderManager._instance = self
 
-        self.objects = []
+        self.objects: list[BaseGeoModel] = []
 
     def register(self, obj):
         self.objects.append(obj)
@@ -24,4 +27,5 @@ class RenderManager:
 
     def render_all(self, surface):
         for obj in self.objects:
-            obj.render(surface)
+            if obj.visible:
+                obj.render(surface)
