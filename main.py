@@ -1,8 +1,15 @@
 from core.engine import Engine
+from core.scenes.static_scene import StaticABScene
 
 
 def main():
     engine = Engine()
+
+    # Добавляем первую сцену
+    engine.add_scene("main", StaticABScene())
+    # Устанавливаем начальную сцену
+    engine.set_scene("main")
+
     engine.run()
 
 
