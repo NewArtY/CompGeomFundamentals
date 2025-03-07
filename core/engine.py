@@ -1,8 +1,7 @@
 import pygame
-from time import time
 
 from geometry.primitives import Arc
-from geometry.shapes import LetterA, LetterB
+from geometry.shapes import LetterA, LetterB, NewLetterA
 from renderers.shape_render import RenderManager
 
 
@@ -16,6 +15,7 @@ class Engine:
         self.render = RenderManager.get_instance()
         self.fps = 60
         self.letterA = None
+        self.newLetterA = None
 
     def process_events(self):
         """Обработка событий Pygame"""
@@ -27,14 +27,15 @@ class Engine:
                     self.letterA.shapes[0].color = (0, 255, 0)
 
     def start_scene(self):
-        self.letterA = LetterA(h=200)
         LetterA(h=100, color=(0, 0, 255), center=(0, -50))
-        Arc((0, 0), 100, 30, 150, (255, 0, 0))
+        self.letterA = LetterA(h=200)
+        self.newLetterA = NewLetterA(center=(0, -200), h=150)
         LetterB(center=(0, 125))
+        Arc((0, 0), 100, 30, 150, (255, 0, 0))
 
     def update(self):
         """Обновление состояния игры/приложения"""
-        pass
+        self.newLetterA.update()
 
     def rendering(self):
         """Отрисовка кадра"""
