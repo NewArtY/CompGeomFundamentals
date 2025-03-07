@@ -37,20 +37,26 @@ class LetterB(BaseShapeModel):
 class NewLetterA(BaseShapeModel):
     def __init__(self, h: int = 100, center: tuple[int, int] = (0, 0), color: tuple[int, int, int] = (255, 0, 0)):
         super().__init__(color)
-        coors_out = (
-            (center[0] - h // 2, center[1] - h // 2),
-            (center[0], center[1] + h // 2),
-            (center[0] + h // 2, center[1] - h // 2)
-        )
-        coors_in = (
-            (center[0] + h // 4, center[1]),
-            (center[0] - h // 4, center[1])
-        )
-        coors = interpolation_with_length(5, coors_out) + interpolation_with_length(5, coors_in)
-        self.create_shape(
-            *(
-                Polyline(coors=(dot1, dot2), color=color) for dot1, dot2 in zip(coors[:-1], coors[1:])
+        length_step = 2
+        shapes = []
+        coors = (
+            (
+                (center[0] - h // 2, center[1] - h // 2),
+                (center[0], center[1] + h // 2),
+                (center[0] + h // 2, center[1] - h // 2)
+             ),
+            (
+                (center[0] + h // 4, center[1]),
+                (center[0] - h // 4, center[1])
             )
+        )
+
+        for coord in coors:
+            new_coord = interpolation_with_length(length_step, coord)
+            shapes += [Polyline(coors=(dot1, dot2), color=color) for dot1, dot2 in zip(new_coord[:-1], new_coord[1:])]
+
+        self.create_shape(
+            *shapes
         )
         self.hide_count = 0
 
