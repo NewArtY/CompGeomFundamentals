@@ -36,6 +36,21 @@ class Engine:
             self.current_scene = self.scenes[name]
             self.current_scene.on_enter()
 
+    def message_btw_scenes(self):
+        font = pygame.font.Font(None, 24)
+        text1 = font.render("Нажмите ", True, (255, 255, 255))
+        text2 = font.render("n", True, (255, 0, 0))
+        text3 = font.render(", чтобы перейти к следующей сцене", True, (255, 255, 255))
+        text_rect1 = text1.get_rect()
+        text_rect2 = text2.get_rect()
+        text_rect3 = text3.get_rect()
+        text_rect1.bottomleft = (10, self.screen.get_height() - 10)
+        text_rect2.bottomleft = (text_rect1.right, self.screen.get_height() - 10)
+        text_rect3.bottomleft = (text_rect2.right, self.screen.get_height() - 10)
+        self.screen.blit(text1, text_rect1)
+        self.screen.blit(text2, text_rect2)
+        self.screen.blit(text3, text_rect3)
+
     def process_events(self):
         """Обработка событий Pygame"""
         for event in pygame.event.get():
@@ -53,6 +68,7 @@ class Engine:
         """Отрисовка кадра"""
         self.screen.fill((0, 0, 0))  # Очистка экрана
         if self.current_scene:
+            self.message_btw_scenes()  # Сообщение между сценами
             self.current_scene.render(self.screen)  # Отрисовка сцены
         pygame.display.flip()  # Обновление экрана
 
