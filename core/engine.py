@@ -24,6 +24,17 @@ class Engine:
     def set_scene(self, name):
         """Устанавливает текущую сцену"""
         if name in self.scenes:
+            # Завершаем работу текущей сцены, если она существует
+            if self.current_scene:
+                self.current_scene.on_exit()
+
+            # Очищаем экран при переключении сцен
+            self.screen.fill((0, 0, 0))
+            print(self.screen.get_size())
+            pygame.display.flip()  # Обновляем дисплей, чтобы изменения стали видны
+            print('Обновили!')
+
+            # Устанавливаем новую сцену
             self.current_scene = self.scenes[name]
             self.current_scene.on_enter()
 

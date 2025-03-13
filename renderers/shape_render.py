@@ -24,6 +24,9 @@ class RenderManager:
         if obj in self.objects:
             self.objects.remove(obj)
 
+    def clear_all(self):
+        self.objects = []
+
     def render_all(self, surface):
         for obj in self.objects:
             if obj.visible:

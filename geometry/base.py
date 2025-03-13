@@ -1,3 +1,5 @@
+import numpy as np
+
 from renderers.shape_render import RenderManager
 
 
@@ -35,11 +37,14 @@ class BaseGeoModel(BaseModel):
 
     @staticmethod
     def __generalized_mod(coors: tuple[tuple, ...]):
-        return coors
+        return np.array(coors, dtype=np.float64)
 
     @staticmethod
     def get_new_coors(old: tuple[int, int], h: int, w: int) -> tuple[int, int]:
         return int(old[0] + w // 2), int(h // 2 - old[1])
+
+    def move_on(self, d: tuple):
+        self.coors += np.array(d, dtype=np.float64)
 
 
 class BaseShapeModel(BaseModel):
