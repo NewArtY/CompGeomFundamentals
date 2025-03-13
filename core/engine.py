@@ -30,9 +30,7 @@ class Engine:
 
             # Очищаем экран при переключении сцен
             self.screen.fill((0, 0, 0))
-            print(self.screen.get_size())
             pygame.display.flip()  # Обновляем дисплей, чтобы изменения стали видны
-            print('Обновили!')
 
             # Устанавливаем новую сцену
             self.current_scene = self.scenes[name]

@@ -18,7 +18,6 @@ class StaticABScene(Scene):
         self.letterA = LetterA(h=200)
         self.newLetterA = NewLetterA(center=(0, -200), h=150)
         Arc((0, 0), 100, 30, 150, (255, 0, 0))
-        print(self.engine)
 
     def on_exit(self):
         self.renderer.clear_all()
