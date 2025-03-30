@@ -1,5 +1,6 @@
 import numpy as np
 
+from core.config import BACKGROUND
 from renderers.shape_render import RenderManager
 
 
@@ -30,8 +31,8 @@ class BaseModel:
 
 class BaseGeoModel(BaseModel):
     def __init__(self, *args, **kwargs):
-        self.manager = RenderManager.get_instance()
-        self.manager.register(self)
+        self.manager = RenderManager()
+        self.manager.register(self, layer=kwargs.get('layer', BACKGROUND))
         self.coors = self.__generalized_mod(kwargs.get('coors'))
         super().__init__(color=kwargs.get('color'))
 

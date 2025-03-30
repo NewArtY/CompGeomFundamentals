@@ -1,33 +1,32 @@
-class RenderManager:
-    _instance = None
+from core.config import BACKGROUND, MIDDLE, FOREGROUND
+from core.meta import SingletonMeta
 
-    @classmethod
-    def get_instance(cls):
-        if cls._instance is None:
-            cls._instance = RenderManager()
-        return cls._instance
 
+class RenderManager(metaclass=SingletonMeta):
     def __init__(self):
         from geometry.base import BaseGeoModel
 
-        if RenderManager._instance is not None:
-            raise Exception("This class is a singleton!")
-        else:
-            RenderManager._instance = self
+        self.layers: dict[str, list[BaseGeoModel]] = {
+            BACKGROUND: [],   # Нижний слой
+            MIDDLE: [],       # Средний слой
+            FOREGROUND: []    # Верхний слой
+        }
 
-        self.objects: list[BaseGeoModel] = []
-
-    def register(self, obj):
-        self.objects.append(obj)
+    def register(self, obj, layer="background"):
+        if layer not in self.layers:
+            raise ValueError(f"Layer '{layer}' does not exist.")
+        self.layers[layer].append(obj)
 
     def unregister(self, obj):
-        if obj in self.objects:
-            self.objects.remove(obj)
+        for layer in self.layers.keys():
+            if obj in self.layers[layer]:
+                self.layers[layer].remove(obj)
 
     def clear_all(self):
-        self.objects = []
+        self.layers = {"background": [], "middle": [], "foreground": []}
 
     def render_all(self, surface):
-        for obj in self.objects:
-            if obj.visible:
-                obj.render(surface)
+        for _, objects in self.layers.items():
+            for obj in objects:
+                if obj.visible:
+                    obj.render(surface)

@@ -6,7 +6,7 @@ from renderers.shape_render import RenderManager
 class Scene(ABC):
     def __init__(self):
         self.engine = None  # Ссылка на движок должна быть установлена при добавлении сцены
-        self.renderer = RenderManager.get_instance()
+        self.renderer = RenderManager()
 
     @abstractmethod
     def on_enter(self):

@@ -2,12 +2,15 @@ import numpy as np
 import pygame
 from pygame.gfxdraw import pixel, line, arc
 
+from core.config import BACKGROUND
 from geometry.base import BaseGeoModel
 
 
 class Point(BaseGeoModel):
-    def __init__(self, coors: tuple[int, int] = (0, 0), color: tuple[int, int, int] = (0, 0, 0)):
-        super().__init__(coors=coors, color=color)
+    def __init__(self, coors: tuple[int, int] = (0, 0),
+                 color: tuple[int, int, int] = (0, 0, 0),
+                 layer: str = BACKGROUND):
+        super().__init__(coors=coors, color=color, layer=layer)
 
     def render(self, surface: pygame.Surface):
         pixel(surface, *BaseGeoModel.get_new_coors(self.coors, surface.get_height(), surface.get_width()), self.color)
@@ -15,8 +18,9 @@ class Point(BaseGeoModel):
 
 class Polyline(BaseGeoModel):
     def __init__(self, coors: tuple[tuple, ...] = ((0, 0), (1, 1)),
-                 color: tuple[int, int, int] = (0, 0, 0)):
-        super().__init__(coors=coors, color=color)
+                 color: tuple[int, int, int] = (0, 0, 0),
+                 layer: str = BACKGROUND):
+        super().__init__(coors=coors, color=color, layer=layer)
 
     @staticmethod
     def __generalized_mod(coors: tuple[tuple]):
@@ -34,9 +38,11 @@ class Polyline(BaseGeoModel):
 
 
 class Arc(BaseGeoModel):
-    def __init__(self, coors: tuple[int, int] = (0, 0), r: int = 10, start_angle: int = 0, end_angle: int = 180,
-                 color: tuple[int, int, int] = (255, 255, 255)):
-        super().__init__(coors=coors, color=color)
+    def __init__(self, coors: tuple[int, int] = (0, 0),
+                 r: int = 10, start_angle: int = 0, end_angle: int = 180,
+                 color: tuple[int, int, int] = (255, 255, 255),
+                 layer: str = BACKGROUND):
+        super().__init__(coors=coors, color=color, layer=layer)
         self.r = r
         self.start_angle = start_angle
         self.end_angle = end_angle
