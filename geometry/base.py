@@ -28,6 +28,21 @@ class BaseModel:
     def visible(self, visible: bool):
         self.__visible = visible
 
+    def move_on(self, d: tuple[int | float, int | float]):
+        pass
+
+    def rotate_by_dot(self, alpha, d):
+        pass
+
+    def scale_by_dot(self, d, k):
+        pass
+
+    def rotate(self, alpha):
+        pass
+
+    def scale(self, k):
+        pass
+
 
 class BaseGeoModel(BaseModel):
     def __init__(self, *args, **kwargs):
@@ -89,3 +104,23 @@ class BaseShapeModel(BaseModel):
     def visible(self, visible: bool):
         for shape in self.shapes:
             shape.visible = visible
+
+    def rotate(self, alpha):
+        for shape in self.shapes:
+            shape.rotate(alpha)
+
+    def scale(self, alpha):
+        for shape in self.shapes:
+            shape.scale(alpha)
+
+    def rotate_by_dot(self, alpha, d):
+        for shape in self.shapes:
+            shape.rotate_by_dot(alpha, d)
+
+    def scale_by_dot(self, d, k):
+        for shape in self.shapes:
+            shape.rotate_by_dot(d, k)
+
+    def move_on(self, d):
+        for shape in self.shapes:
+            shape.move_on(d)

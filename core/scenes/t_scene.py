@@ -35,7 +35,7 @@ class MovingPointScene(Scene):
     def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_n:
-                self.engine.set_scene('main')
+                self.engine.set_scene('transformation')
 
     def update(self, dt):
         self.point_1.move_on(next(self.circle_t))

@@ -72,11 +72,13 @@ class Arc(BaseGeoModel):
     def render(self, surface: pygame.Surface):
         height, width = surface.get_height(), surface.get_width()
         arc(surface, *self.get_new_coors(self.coors, height, width),
-            self.r, 360 - self.end_angle, 360 - self.start_angle, self.color)
+            int(self.r), int(360 - self.end_angle), int(360 - self.start_angle), self.color)
 
     def rotate(self, alpha: int | float):
-        self.start_angle -= alpha
-        self.end_angle -= alpha
+        self.start_angle += alpha
+        self.start_angle %= 360
+        self.end_angle += alpha
+        self.end_angle %= 360
 
     def scale(self, k: int | float):
         self.r *= k
