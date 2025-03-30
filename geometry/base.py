@@ -47,10 +47,11 @@ class BaseGeoModel(BaseModel):
     def abstract_transformation(self, alpha: int | float = 0,
                                 d: tuple[int | float, int | float] = (0, 0),
                                 k: int | float = 1):
-        f = np.array([[k * np.cos(alpha), k * np.sin(alpha), 0],
-                      [-k * np.sin(alpha), k * np.cos(alpha), 0],
-                      [d[0], d[1], 1]]
-                     )
+        f = np.array([
+            [k * np.cos(np.deg2rad(alpha)),  k * np.sin(np.deg2rad(alpha)), 0],
+            [-k * np.sin(np.deg2rad(alpha)), k * np.cos(np.deg2rad(alpha)), 0],
+            [d[0],                           d[1],                          1]
+        ])
         self.coors = self.coors.dot(f)
 
     def move_on(self, d: tuple[int | float, int | float]):
