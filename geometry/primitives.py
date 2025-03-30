@@ -47,6 +47,18 @@ class Polyline(BaseGeoModel):
                  *self.get_new_coors(d2, height, width), self.color)
 
 
+class Polygon(Polyline):
+    def __init__(self, coors: tuple[tuple, ...] = ((0, 0), (1, 1)),
+                 color: tuple[int, int, int] = (0, 0, 0),
+                 layer: str = BACKGROUND):
+        coors += (coors[0], )
+        super().__init__(coors, color, layer)
+
+    @property
+    def _center(self):
+        return np.mean(self.coors[:-1], axis=0)[:2]
+
+
 class Arc(BaseGeoModel):
     def __init__(self, coors: tuple[int, int] = (0, 0),
                  r: int = 10, start_angle: int = 0, end_angle: int = 180,
@@ -59,5 +71,5 @@ class Arc(BaseGeoModel):
 
     def render(self, surface: pygame.Surface):
         height, width = surface.get_height(), surface.get_width()
-        arc(surface, *BaseGeoModel.get_new_coors(self.coors, height, width),
+        arc(surface, *self.get_new_coors(self.coors, height, width),
             self.r, 360 - self.end_angle, 360 - self.start_angle, self.color)
