@@ -33,19 +33,38 @@ class BaseGeoModel(BaseModel):
     def __init__(self, *args, **kwargs):
         self.manager = RenderManager()
         self.manager.register(self, layer=kwargs.get('layer', BACKGROUND))
-        self.coors = self.__generalized_mod(kwargs.get('coors'))
+        self.coors = self._generalized_mod(kwargs.get('coors'))
         super().__init__(color=kwargs.get('color'))
-
-    @staticmethod
-    def __generalized_mod(coors: tuple[tuple, ...]):
-        return np.array(coors, dtype=np.float64)
 
     @staticmethod
     def get_new_coors(old: tuple[int, int], h: int, w: int) -> tuple[int, int]:
         return int(old[0] + w // 2), int(h // 2 - old[1])
 
-    def move_on(self, d: tuple):
-        self.coors += np.array(d, dtype=np.float64)
+    def _generalized_mod(self, coors: tuple[int, int]):
+        """Обобщённые координаты для ломанной точки"""
+        return np.hstack((coors, (1, )))
+
+    def abstract_transformation(self, alpha: int | float = 0,
+                                d: tuple[int | float, int | float] = (0, 0),
+                                k: int | float = 1):
+        f = np.array([[k * np.cos(alpha), k * np.sin(alpha), 0],
+                      [-k * np.sin(alpha), k * np.cos(alpha), 0],
+                      [d[0], d[1], 1]]
+                     )
+        self.coors = self.coors.dot(f)
+
+    def move_on(self, d: tuple[int | float, int | float]):
+        self.abstract_transformation(0, d, 1)
+
+    def rotate_by_dot(self, alpha, d):
+        self.abstract_transformation(0, (-d[0], -d[1]), 1)
+        self.abstract_transformation(alpha, (0, 0), 1)
+        self.abstract_transformation(0, d, 1)
+
+    def scale_by_dot(self, d, k):
+        self.abstract_transformation(0, (-d[0], -d[1]), 1)
+        self.abstract_transformation(0, (0, 0), k)
+        self.abstract_transformation(0, d, 1)
 
 
 class BaseShapeModel(BaseModel):

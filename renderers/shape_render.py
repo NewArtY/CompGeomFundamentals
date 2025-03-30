@@ -12,7 +12,7 @@ class RenderManager(metaclass=SingletonMeta):
             FOREGROUND: []    # Верхний слой
         }
 
-    def register(self, obj, layer="background"):
+    def register(self, obj, layer: str = BACKGROUND):
         if layer not in self.layers:
             raise ValueError(f"Layer '{layer}' does not exist.")
         self.layers[layer].append(obj)
@@ -23,7 +23,7 @@ class RenderManager(metaclass=SingletonMeta):
                 self.layers[layer].remove(obj)
 
     def clear_all(self):
-        self.layers = {"background": [], "middle": [], "foreground": []}
+        self.layers = {BACKGROUND: [], MIDDLE: [], FOREGROUND: []}
 
     def render_all(self, surface):
         for _, objects in self.layers.items():

@@ -13,7 +13,7 @@ class Point(BaseGeoModel):
         super().__init__(coors=coors, color=color, layer=layer)
 
     def render(self, surface: pygame.Surface):
-        pixel(surface, *BaseGeoModel.get_new_coors(self.coors, surface.get_height(), surface.get_width()), self.color)
+        pixel(surface, *self.get_new_coors(self.coors, surface.get_height(), surface.get_width()), self.color)
 
 
 class Polyline(BaseGeoModel):
@@ -22,19 +22,29 @@ class Polyline(BaseGeoModel):
                  layer: str = BACKGROUND):
         super().__init__(coors=coors, color=color, layer=layer)
 
-    @staticmethod
-    def __generalized_mod(coors: tuple[tuple]):
-        """Метод предварительной обработки координат для ломанной линии"""
-
+    def _generalized_mod(self, coors: tuple[tuple]):
+        """Обобщённые координаты для ломанной линии"""
         coors = np.array(coors, dtype=np.float64)
         ones_array = np.ones((coors.shape[0], 1), dtype=int)
         return np.hstack((coors, ones_array))
 
+    @property
+    def _center(self):
+        return np.mean(self.coors, axis=0)[:2]
+
+    def rotate(self, alpha):
+        c = self._center
+        self.rotate_by_dot(alpha, c)
+
+    def scale(self, k):
+        c = self._center
+        self.scale_by_dot(c, k)
+
     def render(self, surface: pygame.Surface):
         height, width = surface.get_height(), surface.get_width()
         for d1, d2 in zip(self.coors[:-1], self.coors[1:]):
-            line(surface, *BaseGeoModel.get_new_coors(d1, height, width),
-                 *BaseGeoModel.get_new_coors(d2, height, width), self.color)
+            line(surface, *self.get_new_coors(d1, height, width),
+                 *self.get_new_coors(d2, height, width), self.color)
 
 
 class Arc(BaseGeoModel):
