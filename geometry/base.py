@@ -94,10 +94,7 @@ class BaseGeoModel(BaseModel):
 class BaseShapeModel(BaseModel):
     def __init__(self, *args, **kwargs):
         super().__init__(color=kwargs.get('color'))
-        self.shapes: list[BaseModel] | None = None
-
-    def create_shape(self, *args: BaseModel):
-        self.shapes = list(args)
+        self.shapes: list[BaseModel] = list(args)
 
     def render(self, surface):
         for shape in self.shapes:

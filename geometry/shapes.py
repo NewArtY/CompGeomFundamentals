@@ -11,7 +11,6 @@ class LetterA(BaseShapeModel):
         :param center: central coordinate of the letter
         :param color: letter color (initial)
         """
-        super().__init__(color)
         coors = (
             (center[0] - h//2, center[1] - h//2),
             (center[0], center[1] + h//2),
@@ -19,7 +18,7 @@ class LetterA(BaseShapeModel):
             (center[0] + h//4, center[1]),
             (center[0] - h//4, center[1])
         )
-        self.create_shape(Polyline(coors=coors, color=color))
+        super().__init__(Polyline(coors=coors, color=color), color=color)
 
 
 class LetterB(BaseShapeModel):
@@ -30,7 +29,6 @@ class LetterB(BaseShapeModel):
         :param center: central coordinate of the letter
         :param color: letter color (initial)
         """
-        super().__init__(color)
         coors = (
             (center[0] + h//4, center[1] + h//2),
             (center[0] - h//4, center[1] + h//2),
@@ -40,9 +38,10 @@ class LetterB(BaseShapeModel):
             (center[0] - h//4, center[1] - h//2),
             (center[0], center[1] - h//2)
         )
-        self.create_shape(
+        super().__init__(
             Polyline(coors=coors, color=color),
-            Arc((center[0], center[1] - h // 4), h // 4, -90, 90, color)
+            Arc((center[0], center[1] - h // 4), h // 4, -90, 90, color),
+            color=color
         )
 
 
@@ -54,7 +53,6 @@ class NewLetterA(BaseShapeModel):
         :param center: central coordinate of the letter
         :param color: letter color (initial)
         """
-        super().__init__(color)
         length_step = 2
         shapes = []
         coors = (
@@ -73,10 +71,8 @@ class NewLetterA(BaseShapeModel):
             new_coord = interpolation_with_length(length_step, coord)
             shapes += [Polyline(coors=(dot1, dot2), color=color) for dot1, dot2 in zip(new_coord[:-1], new_coord[1:])]
 
-        self.create_shape(
-            *shapes
-        )
         self.hide_count = 0
+        super().__init__(*shapes, color=color)
 
     def update(self) -> bool:
         """
@@ -88,3 +84,7 @@ class NewLetterA(BaseShapeModel):
             self.hide_count += 1
             return True
         return False
+
+
+class AChain(BaseShapeModel):
+    pass
