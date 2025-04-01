@@ -9,6 +9,14 @@ class BaseModel:
         self.__color = color
         self.__visible = True
 
+    @staticmethod
+    def get_new_coors(old: tuple[int, int], h: int, w: int) -> tuple[int, int]:
+        return int(old[0] + w // 2), int(h // 2 - old[1])
+
+    @staticmethod
+    def get_old_coors(old: tuple[int, int], h: int, w: int) -> tuple[int, int]:
+        return int(old[0] - w // 2), int(h // 2 - old[1])
+
     def render(self, surface):
         pass  # Переопределяется в дочерних классах
 
@@ -27,6 +35,10 @@ class BaseModel:
     @visible.setter
     def visible(self, visible: bool):
         self.__visible = visible
+
+    @property
+    def _center(self):
+        return None
 
     def move_on(self, d: tuple[int | float, int | float]):
         pass
@@ -50,10 +62,6 @@ class BaseGeoModel(BaseModel):
         self.manager.register(self, layer=kwargs.get('layer', BACKGROUND))
         self.coors = self._generalized_mod(kwargs.get('coors'))
         super().__init__(color=kwargs.get('color'))
-
-    @staticmethod
-    def get_new_coors(old: tuple[int, int], h: int, w: int) -> tuple[int, int]:
-        return int(old[0] + w // 2), int(h // 2 - old[1])
 
     def _generalized_mod(self, coors: tuple[int, int]):
         """Обобщённые координаты для ломанной точки"""
@@ -105,13 +113,22 @@ class BaseShapeModel(BaseModel):
         for shape in self.shapes:
             shape.visible = visible
 
-    def rotate(self, alpha):
+    @property
+    def _center(self):
+        center = np.array([0, 0], dtype=np.float64)
         for shape in self.shapes:
-            shape.rotate(alpha)
+            center += shape._center
+        return center/len(self.shapes)
+
+    def rotate(self, alpha):
+        center = self._center
+        for shape in self.shapes:
+            shape.rotate_by_dot(alpha, center)
 
     def scale(self, alpha):
+        center = self._center
         for shape in self.shapes:
-            shape.scale(alpha)
+            shape.scale_by_dot(alpha, center)
 
     def rotate_by_dot(self, alpha, d):
         for shape in self.shapes:
@@ -119,7 +136,7 @@ class BaseShapeModel(BaseModel):
 
     def scale_by_dot(self, d, k):
         for shape in self.shapes:
-            shape.rotate_by_dot(d, k)
+            shape.scale_by_dot(d, k)
 
     def move_on(self, d):
         for shape in self.shapes:

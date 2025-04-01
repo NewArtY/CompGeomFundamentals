@@ -15,6 +15,10 @@ class Point(BaseGeoModel):
     def render(self, surface: pygame.Surface):
         pixel(surface, *self.get_new_coors(self.coors, surface.get_height(), surface.get_width()), self.color)
 
+    @property
+    def _center(self):
+        return self.coors[:2]
+
 
 class Polyline(BaseGeoModel):
     def __init__(self, coors: tuple[tuple, ...] = ((0, 0), (1, 1)),
@@ -90,3 +94,7 @@ class Arc(BaseGeoModel):
     def scale_by_dot(self, d, k):
         super().scale_by_dot(d, k)
         self.scale(k)
+
+    @property
+    def _center(self):
+        return self.coors[:2]

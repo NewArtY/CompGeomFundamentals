@@ -38,4 +38,5 @@ class TransformationScene(Scene):
         self.arc.scale(self.mult)
         d = np.random.randint(-5, 6, 2)
         self.letterA.move_on(d)
-        self.letterB.rotate_by_dot(1, (0,0))
+        self.letterB.rotate_by_dot(1, (0, 0))
+        self.letterB.rotate(-2)
