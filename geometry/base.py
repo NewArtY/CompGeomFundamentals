@@ -5,17 +5,19 @@ from renderers.shape_render import RenderManager
 
 
 class BaseModel:
+    w, h = None, None
+
     def __init__(self, color: tuple[int, int, int]):
         self.__color = color
         self.__visible = True
 
     @staticmethod
-    def get_new_coors(old: tuple[int, int], h: int, w: int) -> tuple[int, int]:
-        return int(old[0] + w // 2), int(h // 2 - old[1])
+    def get_new_coors(old: tuple[int, int]) -> tuple[int, int]:
+        return int(old[0] + BaseModel.w // 2), int(BaseModel.h // 2 - old[1])
 
     @staticmethod
-    def get_old_coors(old: tuple[int, int], h: int, w: int) -> tuple[int, int]:
-        return int(old[0] - w // 2), int(h // 2 - old[1])
+    def get_old_coors(new: tuple[int, int]) -> tuple[int, int]:
+        return int(new[0] - BaseModel.w // 2), int(BaseModel.h // 2 - new[1])
 
     def render(self, surface):
         pass  # Переопределяется в дочерних классах

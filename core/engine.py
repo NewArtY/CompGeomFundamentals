@@ -5,6 +5,7 @@ from time import time
 class Engine:
     def __init__(self, width=800, height=600, title="Geometry App"):
         from core.scenes.base_scene import Scene
+        from geometry.base import BaseModel
 
         pygame.init()
         self.screen = pygame.display.set_mode((width, height))
@@ -15,6 +16,8 @@ class Engine:
         self.dt = 0  # delta time
         self.scenes = {}
         self.current_scene: Scene | None = None
+        BaseModel.w = width
+        BaseModel.h = height
 
     def add_scene(self, name, scene):
         """Добавляет сцену в движок"""

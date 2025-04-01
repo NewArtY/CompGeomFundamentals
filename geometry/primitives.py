@@ -13,7 +13,7 @@ class Point(BaseGeoModel):
         super().__init__(coors=coors, color=color, layer=layer)
 
     def render(self, surface: pygame.Surface):
-        pixel(surface, *self.get_new_coors(self.coors, surface.get_height(), surface.get_width()), self.color)
+        pixel(surface, *self.get_new_coors(self.coors), self.color)
 
     @property
     def _center(self):
@@ -45,10 +45,9 @@ class Polyline(BaseGeoModel):
         self.scale_by_dot(c, k)
 
     def render(self, surface: pygame.Surface):
-        height, width = surface.get_height(), surface.get_width()
         for d1, d2 in zip(self.coors[:-1], self.coors[1:]):
-            line(surface, *self.get_new_coors(d1, height, width),
-                 *self.get_new_coors(d2, height, width), self.color)
+            line(surface, *self.get_new_coors(d1),
+                 *self.get_new_coors(d2), self.color)
 
 
 class Polygon(Polyline):
@@ -74,8 +73,7 @@ class Arc(BaseGeoModel):
         self.end_angle = end_angle
 
     def render(self, surface: pygame.Surface):
-        height, width = surface.get_height(), surface.get_width()
-        arc(surface, *self.get_new_coors(self.coors, height, width),
+        arc(surface, *self.get_new_coors(self.coors),
             int(self.r), int(360 - self.end_angle), int(360 - self.start_angle), self.color)
 
     def rotate(self, alpha: int | float):

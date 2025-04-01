@@ -1,6 +1,8 @@
+import numpy as np
+
 from geometry.base import BaseShapeModel
 from geometry.primitives import Polyline, Arc
-from geometry.utils import interpolation_with_length
+from geometry.utils import interpolation_with_length, get_step
 
 
 class LetterA(BaseShapeModel):
@@ -87,4 +89,30 @@ class NewLetterA(BaseShapeModel):
 
 
 class AChain(BaseShapeModel):
-    pass
+    def __init__(self, h: int = 20, center: tuple[int, int] = (0, 0), count_a: int = 1,
+                 color: tuple[int, int, int] = (255, 0, 0)):
+        self.steps: list[tuple[int, int]] = [(0, 0)] * count_a
+        shapes = []
+        for _ in range(count_a):
+            shapes.append(LetterA(h, center, color))
+        super().__init__(*shapes, color=color)
+
+    def update(self, move_on_x: int | float, move_on_y: int | float, by_step: int | float):
+        del self.steps[0]
+        if move_on_x is not None and move_on_y is not None:
+            self.steps += [
+                tuple(get_step(self.shapes[-1]._center,
+                               np.array(self.get_old_coors((move_on_x, move_on_y))),
+                               by_step)
+                      )
+            ]
+        else:
+            self.steps += [
+                tuple(get_step(self.shapes[-1]._center,
+                               np.array((0, 0)),
+                               by_step)
+                      )
+            ]
+
+        for shape, step in zip(self.shapes, self.steps):
+            shape.move_on(step)

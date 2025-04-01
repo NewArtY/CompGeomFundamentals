@@ -42,5 +42,15 @@ def generate_points_on_polygon(polygon, dist):
     return result
 
 
+def get_step(from_point: np.ndarray, to_point: np.ndarray, length: int | float, accuracy: int | float | None = None):
+    vec = to_point - from_point
+    dist = np.sqrt(vec[0]**2 + vec[1]**2)
+    if accuracy is None:
+        accuracy = length / 2
+    if dist < accuracy:
+        return np.array([0., 0.])
+    return length * vec / dist
+
+
 if __name__ == '__main__':
     print(generate_equidistant_points(np.array([1, 1]), np.array([5, 10]), 14))
