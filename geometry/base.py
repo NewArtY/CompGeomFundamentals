@@ -57,6 +57,12 @@ class BaseModel:
     def scale(self, k):
         pass
 
+    def shear(self, s):
+        pass
+
+    def shear_by_segment(self, s: int | float, directed_segment: tuple[tuple[int | float, int | float], int | float]):
+        pass
+
 
 class BaseGeoModel(BaseModel):
     def __init__(self, *args, **kwargs):
@@ -71,11 +77,12 @@ class BaseGeoModel(BaseModel):
 
     def abstract_transformation(self, alpha: int | float = 0,
                                 d: tuple[int | float, int | float] = (0, 0),
-                                k: int | float = 1):
+                                k: int | float = 1,
+                                s: int | float = 0):
         f = np.array([
-            [k * np.cos(np.deg2rad(alpha)),  k * np.sin(np.deg2rad(alpha)), 0],
-            [-k * np.sin(np.deg2rad(alpha)), k * np.cos(np.deg2rad(alpha)), 0],
-            [d[0],                           d[1],                          1]
+            [k * np.cos(np.deg2rad(alpha)),     k * np.sin(np.deg2rad(alpha)), 0],
+            [s - k * np.sin(np.deg2rad(alpha)), k * np.cos(np.deg2rad(alpha)), 0],
+            [d[0],                              d[1],                          1]
         ])
         self.coors = self.coors.dot(f)
 
@@ -91,6 +98,16 @@ class BaseGeoModel(BaseModel):
         self.abstract_transformation(0, (-d[0], -d[1]), 1)
         self.abstract_transformation(0, (0, 0), k)
         self.abstract_transformation(0, d, 1)
+
+    def shear(self, s):
+        self.abstract_transformation(s=s)
+
+    def shear_by_segment(self, s: int | float, directed_segment: tuple[tuple[int | float, int | float], int | float]):
+        self.move_on((-directed_segment[0][0], -directed_segment[0][1]))
+        self.rotate(-directed_segment[1])
+        self.shear(s)
+        self.rotate(directed_segment[1])
+        self.move_on(directed_segment[0])
 
 
 class BaseShapeModel(BaseModel):
@@ -140,3 +157,11 @@ class BaseShapeModel(BaseModel):
     def move_on(self, d):
         for shape in self.shapes:
             shape.move_on(d)
+
+    def shear(self, s):
+        for shape in self.shapes:
+            shape.shear(s)
+
+    def shear_by_segment(self, s: int | float, directed_segment: tuple[tuple[int | float, int | float], int | float]):
+        for shape in self.shapes:
+            shape.shear_by_segment(s, directed_segment)

@@ -1,7 +1,10 @@
+import random
+
 import numpy as np
 
+from core.tools import TimedSpawner
 from geometry.base import BaseShapeModel
-from geometry.primitives import Polyline, Arc
+from geometry.primitives import Polyline, Arc, Point
 from geometry.utils import interpolation_with_length, get_step
 
 
@@ -45,6 +48,64 @@ class LetterB(BaseShapeModel):
             Arc((center[0], center[1] - h // 4), h // 4, -90, 90, color),
             color=color
         )
+
+
+class LetterV(BaseShapeModel):
+    def __init__(self, h: int = 100, center: tuple[int, int] = (0, 0), color: tuple[int, int, int] = (255, 0, 0)):
+        coors = (
+            (center[0], center[1] + h // 2),
+            (center[0] - h // 4, center[1] + h // 2),
+            (center[0] - h // 4, center[1] + h // 6),
+            (center[0], center[1] + h // 6),
+            (center[0] - h // 4, center[1] + h // 6),
+            (center[0] - h // 4, center[1] - h // 2),
+            (center[0], center[1] - h // 2)
+        )
+        super().__init__(
+            Polyline(coors=coors, color=color),
+            Arc((center[0], center[1] - h // 6), h // 3, -90, 90, color),
+            Arc((center[0], center[1] + h // 3), h // 6, -90, 90, color),
+            color=color
+        )
+
+
+class ShapeWithBase(BaseShapeModel):
+    def __init__(self, *args, base_point: tuple[int | float, int | float], base_angle: int | float,
+                 color: tuple[int, int, int] = (255, 0, 0)):
+        BaseShapeModel.__init__(self, args, color=color)
+        self.base_point: Point = Point(base_point)
+        self.base_point.visible = False
+        self.shapes.append(self.base_point)
+        self.base_angle = base_angle
+
+    def rotate(self, alpha):
+        super().rotate(alpha)
+        self.base_angle += alpha
+
+    def rotate_by_dot(self, alpha, d):
+        super().rotate_by_dot(alpha, d)
+        self.base_angle += alpha
+
+    def shear(self, s):
+        self.shear_by_segment(s, (self.base_point.coors, self.base_angle))
+
+
+class LetterAWithBase(ShapeWithBase, LetterA):  # Тут ромбовидное наследование - отнестись внимательнее
+    def __init__(self, h: int = 100, center: tuple[int, int] = (0, 0), color: tuple[int, int, int] = (255, 255, 255)):
+        ShapeWithBase.__init__(self, base_point=(0, - h//2), base_angle=0)
+        LetterA.__init__(self, h, center, color)
+
+
+class LetterBWithBase(ShapeWithBase, LetterB):  # Тут тоже ромбовидное наследование
+    def __init__(self, h: int = 100, center: tuple[int, int] = (0, 0), color: tuple[int, int, int] = (255, 255, 255)):
+        ShapeWithBase.__init__(self, base_point=(0, - h//2), base_angle=0)
+        LetterB.__init__(self, h, center, color)
+
+
+class LetterVWithBase(ShapeWithBase, LetterV):  # И тут тоже ромбовидное наследование
+    def __init__(self, h: int = 100, center: tuple[int, int] = (0, 0), color: tuple[int, int, int] = (255, 255, 255)):
+        ShapeWithBase.__init__(self, base_point=(0, - h//2), base_angle=0)
+        LetterV.__init__(self, h, center, color)
 
 
 class NewLetterA(BaseShapeModel):
@@ -116,3 +177,27 @@ class AChain(BaseShapeModel):
 
         for shape, step in zip(self.shapes, self.steps):
             shape.move_on(step)
+
+
+class SpawnerABVChain(BaseShapeModel):
+    def __init__(self, h: int = 50, spawn: tuple[int, int] = (0, 0), count: int = 10, time_spawn: int = 30,
+                 color: tuple[int, int, int] = (255, 0, 0)):
+        self.h = h
+        self.spawn_place = spawn
+        self.spawn_count = count
+        self.time_spawn = time_spawn
+        self.spawner = TimedSpawner(time_spawn, count)
+        super().__init__(color=color)
+
+    def update(self):
+        if self.spawner.update(len(self.shapes)):
+            self.shapes.append(
+                random.choice([LetterAWithBase, LetterBWithBase, LetterVWithBase]
+                              )(self.h, self.spawn_place,
+                                (random.randint(155, 255),
+                                 random.randint(155, 255),
+                                 random.randint(155, 255)
+                                 ))
+            )
+        self.rotate_by_dot(1, (0, 0))
+
