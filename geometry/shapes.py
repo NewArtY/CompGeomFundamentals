@@ -76,6 +76,7 @@ class ShapeWithBase(BaseShapeModel):
         self.base_point: Point = Point(base_point)
         self.base_point.visible = False
         self.base_angle = base_angle
+        self.current_state = 0
 
     def rotate(self, alpha):
         super().rotate(alpha)
@@ -189,6 +190,12 @@ class SpawnerABVChain(BaseShapeModel):
         self.spawn_count = count
         self.time_spawn = time_spawn
         self.spawner = TimedSpawner(time_spawn, count)
+        step_length = 0.02
+        step_half_count = 25
+        self.track = ([-step_length] * step_half_count +
+                      [step_length] * 2 * step_half_count +
+                      [-step_length] * step_half_count
+                      )
         super().__init__(color=color)
 
     def update(self):
@@ -205,4 +212,8 @@ class SpawnerABVChain(BaseShapeModel):
                 )
             )
         self.rotate_by_dot(1, (0, 0))
-        self.shear(0.01)
+        for shape in self.shapes:
+            if hasattr(shape, 'current_state'):
+                shape.shear(self.track[shape.current_state])
+                shape.current_state += 1
+                shape.current_state %= len(self.track)
