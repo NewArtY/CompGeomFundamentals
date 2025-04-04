@@ -4,7 +4,7 @@ import numpy as np
 
 from core.tools import TimedSpawner
 from geometry.base import BaseShapeModel
-from geometry.primitives import Polyline, Arc, Point
+from geometry.primitives import Polyline, Arc, Point, ShearedArc
 from geometry.utils import interpolation_with_length, get_step
 
 
@@ -45,7 +45,7 @@ class LetterB(BaseShapeModel):
         )
         super().__init__(
             Polyline(coors=coors, color=color),
-            Arc((center[0], center[1] - h // 4), h // 4, -90, 90, color),
+            ShearedArc((center[0], center[1] - h // 4), h // 4, -90, 90, color),
             color=color
         )
 
@@ -63,8 +63,8 @@ class LetterV(BaseShapeModel):
         )
         super().__init__(
             Polyline(coors=coors, color=color),
-            Arc((center[0], center[1] - h // 6), h // 3, -90, 90, color),
-            Arc((center[0], center[1] + h // 3), h // 6, -90, 90, color),
+            ShearedArc((center[0], center[1] - h // 6), h // 3, -90, 90, color),
+            ShearedArc((center[0], center[1] + h // 3), h // 6, -90, 90, color),
             color=color
         )
 
@@ -75,7 +75,6 @@ class ShapeWithBase(BaseShapeModel):
         BaseShapeModel.__init__(self, args, color=color)
         self.base_point: Point = Point(base_point)
         self.base_point.visible = False
-        self.shapes.append(self.base_point)
         self.base_angle = base_angle
 
     def rotate(self, alpha):
@@ -87,25 +86,28 @@ class ShapeWithBase(BaseShapeModel):
         self.base_angle += alpha
 
     def shear(self, s):
-        self.shear_by_segment(s, (self.base_point.coors, self.base_angle))
+        self.shear_by_segment(s, ((self.base_point.coors[0], self.base_point.coors[1]), self.base_angle))
 
 
 class LetterAWithBase(ShapeWithBase, LetterA):  # Тут ромбовидное наследование - отнестись внимательнее
     def __init__(self, h: int = 100, center: tuple[int, int] = (0, 0), color: tuple[int, int, int] = (255, 255, 255)):
-        ShapeWithBase.__init__(self, base_point=(0, - h//2), base_angle=0)
+        ShapeWithBase.__init__(self, base_point=(0, center[1] - h//2), base_angle=0)
         LetterA.__init__(self, h, center, color)
+        self.shapes.append(self.base_point)
 
 
 class LetterBWithBase(ShapeWithBase, LetterB):  # Тут тоже ромбовидное наследование
     def __init__(self, h: int = 100, center: tuple[int, int] = (0, 0), color: tuple[int, int, int] = (255, 255, 255)):
-        ShapeWithBase.__init__(self, base_point=(0, - h//2), base_angle=0)
+        ShapeWithBase.__init__(self, base_point=(0, center[1] - h//2), base_angle=0)
         LetterB.__init__(self, h, center, color)
+        self.shapes.append(self.base_point)
 
 
 class LetterVWithBase(ShapeWithBase, LetterV):  # И тут тоже ромбовидное наследование
     def __init__(self, h: int = 100, center: tuple[int, int] = (0, 0), color: tuple[int, int, int] = (255, 255, 255)):
-        ShapeWithBase.__init__(self, base_point=(0, - h//2), base_angle=0)
+        ShapeWithBase.__init__(self, base_point=(0, center[1] - h//2), base_angle=0)
         LetterV.__init__(self, h, center, color)
+        self.shapes.append(self.base_point)
 
 
 class NewLetterA(BaseShapeModel):
@@ -192,12 +194,15 @@ class SpawnerABVChain(BaseShapeModel):
     def update(self):
         if self.spawner.update(len(self.shapes)):
             self.shapes.append(
-                random.choice([LetterAWithBase, LetterBWithBase, LetterVWithBase]
-                              )(self.h, self.spawn_place,
-                                (random.randint(155, 255),
-                                 random.randint(155, 255),
-                                 random.randint(155, 255)
-                                 ))
+                random.choice(
+                    [LetterAWithBase, LetterBWithBase, LetterVWithBase]
+                              )(
+                    self.h, self.spawn_place,
+                    (random.randint(0, 255),
+                     random.randint(0, 255),
+                     random.randint(0, 255)
+                     )
+                )
             )
         self.rotate_by_dot(1, (0, 0))
-
+        self.shear(0.01)

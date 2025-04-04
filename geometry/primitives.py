@@ -96,3 +96,27 @@ class Arc(BaseGeoModel):
     @property
     def _center(self):
         return self.coors[:2]
+
+
+class ShearedArc(Polyline):
+    def __init__(self, center: tuple[int, int] = (0, 0),
+                 r: int = 10, start_angle: int = 0, end_angle: int = 180,
+                 color: tuple[int, int, int] = (255, 255, 255),
+                 layer: str = BACKGROUND):
+        super().__init__(coors=self._get_coors(r, center, start_angle, end_angle), color=color, layer=layer)
+        self.r = r
+        self.start_angle = start_angle
+        self.end_angle = end_angle
+
+    @staticmethod
+    def _get_coors(r, center, start_angle, end_angle):
+        start_angle = np.pi * start_angle / 180
+        end_angle = np.pi * end_angle / 180
+        angle_measure = r * (end_angle - start_angle)
+        n = int(angle_measure) // 2
+        angle_step = (end_angle - start_angle) / n
+        coors = tuple((center[0] + r * np.cos(start_angle + i * angle_step),
+                       center[1] + r * np.sin(start_angle + i * angle_step)
+                       )
+                      for i in range(n + 1))
+        return coors

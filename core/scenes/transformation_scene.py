@@ -3,7 +3,7 @@ import pygame
 
 from core.scenes.base_scene import Scene
 from geometry.primitives import Arc
-from geometry.shapes import LetterA, LetterB, AChain, LetterV, LetterAWithBase, SpawnerABVChain
+from geometry.shapes import LetterA, LetterB, AChain, LetterAWithBase, SpawnerABVChain
 
 
 class TransformationScene(Scene):
@@ -12,7 +12,6 @@ class TransformationScene(Scene):
         self.letterA = None
         self.letterA2: LetterAWithBase | None = None
         self.letterB = None
-        self.letterV = None
         self.arc = None
         self.mult = 0.99
         self.chain = None
@@ -25,7 +24,6 @@ class TransformationScene(Scene):
         self.letterB = LetterB(center=(-200, 125))
         self.letterA = LetterA(h=200)
         self.letterA2 = LetterAWithBase(h=200, color=(100, 255, 0))
-        self.letterV = LetterV(h=150, center=(200, 0), color=(50, 50, 255))
         self.arc = Arc((0, 0), 100, 30, 150, (255, 0, 0))
         self.chain = AChain(count_a=20, color=(255, 123, 12))
         self.c_s = 0

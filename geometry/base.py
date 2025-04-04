@@ -104,9 +104,9 @@ class BaseGeoModel(BaseModel):
 
     def shear_by_segment(self, s: int | float, directed_segment: tuple[tuple[int | float, int | float], int | float]):
         self.move_on((-directed_segment[0][0], -directed_segment[0][1]))
-        self.rotate(-directed_segment[1])
+        self.rotate_by_dot(-directed_segment[1], (0, 0))
         self.shear(s)
-        self.rotate(directed_segment[1])
+        self.rotate_by_dot(directed_segment[1], (0, 0))
         self.move_on(directed_segment[0])
 
 

@@ -1,7 +1,7 @@
 import pygame
 
 from core.scenes.base_scene import Scene
-from geometry.primitives import Arc
+from geometry.primitives import Arc, ShearedArc
 from geometry.shapes import LetterA, LetterB, NewLetterA
 
 
@@ -17,7 +17,7 @@ class StaticABScene(Scene):
         self.letterB = LetterB(center=(0, 125))
         self.letterA = LetterA(h=200)
         self.newLetterA = NewLetterA(center=(0, -200), h=150)
-        Arc((0, 0), 100, 30, 150, (255, 0, 0))
+        ShearedArc((0, 0), 100, 30, 150, (255, 0, 0))
 
     def on_exit(self):
         self.renderer.clear_all()
@@ -26,6 +26,8 @@ class StaticABScene(Scene):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_k:
                 self.letterA.color = (0, 255, 0)
+            if event.key == pygame.K_t:
+                self.engine.set_scene('test')
             if event.key == pygame.K_n:
                 self.engine.set_scene('trajectories')
 
