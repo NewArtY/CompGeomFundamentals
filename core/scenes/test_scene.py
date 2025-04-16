@@ -12,6 +12,7 @@ class TestScene(Scene):
         self.point: Point | None = None
         self.v_letter: LetterVWithBase | None = None
         self.action_flag: int | None = None
+        self.k_flag: bool | None = None
         self.active_step: tuple | None = None
         self.active_angle: int | float | None = None
 
@@ -33,38 +34,47 @@ class TestScene(Scene):
             if event.key == pygame.K_n:
                 self.engine.set_scene('trajectories')
             if event.key == pygame.K_t:
-                if self.action_flag == 0:
-                    print('Копируем информацию перед новой итерацией.')
-                    self.active_step = (self.v_letter.base_point.coors[0], self.v_letter.base_point.coors[1])
-                    self.active_angle = self.v_letter.base_angle
-                    print('Лог:')
-                    print('Перед перемещением: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                    self.v_letter.move_on((-self.active_step[0], -self.active_step[1]))
-                    print('После перемещения: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                elif self.action_flag == 1:
-                    print('Перед поворотом: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                    self.v_letter.rotate_by_dot(-self.active_angle, (0, 0))
-                    print('После поворота: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                elif self.action_flag == 2:
-                    print('Перед наклоном: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                    self.v_letter.shear_by_segment(0.02, ((0, 0), 0))
-                    print('После наклона: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                elif self.action_flag == 3:
-                    print('Перед поворотом: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                    self.v_letter.rotate_by_dot(self.active_angle, (0, 0))
-                    print('После поворота: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                elif self.action_flag == 4:
-                    print('Перед перемещением: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                    self.v_letter.move_on(self.active_step)
-                    print('После перемещения: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                    print('!!!Наклон закончен!!!')
-                elif self.action_flag == 5:
-                    print('Перед поворотом: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                    self.v_letter.rotate_by_dot(10, (0, 0))
-                    print('После поворота: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
-                    print('!!!После-наклонный поворот закончен!!!')
-                self.action_flag += 1
-                self.action_flag %= 6
+                self.testing()
+            if event.key == pygame.K_s:
+                self.k_flag = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_s:
+                self.k_flag = False
 
     def update(self, dt):
-        pass
+        if self.k_flag:
+            self.testing()
+
+    def testing(self):
+        if self.action_flag == 0:
+            print('Копируем информацию перед новой итерацией.')
+            self.active_step = (self.v_letter.base_point.coors[0], self.v_letter.base_point.coors[1])
+            self.active_angle = self.v_letter.base_angle
+            print('Лог:')
+            print('Перед перемещением: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+            self.v_letter.move_on((-self.active_step[0], -self.active_step[1]))
+            print('После перемещения: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+        elif self.action_flag == 1:
+            print('Перед поворотом: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+            self.v_letter.rotate_by_dot(-self.active_angle, (0, 0))
+            print('После поворота: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+        elif self.action_flag == 2:
+            print('Перед наклоном: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+            self.v_letter.shear_by_segment(0.02, ((0, 0), 0))
+            print('После наклона: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+        elif self.action_flag == 3:
+            print('Перед поворотом: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+            self.v_letter.rotate_by_dot(self.active_angle, (0, 0))
+            print('После поворота: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+        elif self.action_flag == 4:
+            print('Перед перемещением: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+            self.v_letter.move_on(self.active_step)
+            print('После перемещения: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+            print('!!!Наклон закончен!!!')
+        elif self.action_flag == 5:
+            print('Перед поворотом: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+            self.v_letter.rotate_by_dot(10, (0, 0))
+            print('После поворота: ', self.v_letter.base_point.coors, self.v_letter.base_angle)
+            print('!!!После-наклонный поворот закончен!!!')
+        self.action_flag += 1
+        self.action_flag %= 6

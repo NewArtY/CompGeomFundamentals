@@ -81,10 +81,12 @@ class ShapeWithBase(BaseShapeModel):
     def rotate(self, alpha):
         super().rotate(alpha)
         self.base_angle += alpha
+        self.base_angle %= 360
 
     def rotate_by_dot(self, alpha, d):
         super().rotate_by_dot(alpha, d)
         self.base_angle += alpha
+        self.base_angle %= 360
 
     def shear(self, s):
         self.shear_by_segment(s, ((self.base_point.coors[0], self.base_point.coors[1]), self.base_angle))
