@@ -27,9 +27,11 @@ class StaticABScene(Scene):
             if event.key == pygame.K_k:
                 self.letterA.color = (0, 255, 0)
             if event.key == pygame.K_t:
-                self.engine.set_scene('test')
+                self.engine.scene_manager.next_scene(click='t')
             if event.key == pygame.K_n:
-                self.engine.set_scene('trajectories')
+                self.engine.scene_manager.next_scene()
+            if event.key == pygame.K_b:
+                self.engine.scene_manager.previous_scene()
 
     def update(self, dt):
         self.newLetterA.update()

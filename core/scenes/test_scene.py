@@ -32,7 +32,9 @@ class TestScene(Scene):
     def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_n:
-                self.engine.set_scene('trajectories')
+                self.engine.scene_manager.next_scene()
+            if event.key == pygame.K_b:
+                self.engine.scene_manager.previous_scene()
             if event.key == pygame.K_t:
                 self.testing()
             if event.key == pygame.K_s:

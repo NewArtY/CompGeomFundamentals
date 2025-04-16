@@ -37,7 +37,9 @@ class TransformationScene(Scene):
             if event.key == pygame.K_k:
                 self.letterA.color = (255, 255, 255)
             if event.key == pygame.K_n:
-                self.engine.set_scene('main')
+                self.engine.scene_manager.next_scene()
+            if event.key == pygame.K_b:
+                self.engine.scene_manager.previous_scene()
         if event.type == pygame.MOUSEMOTION:
             self.mouse_x, self.mouse_y = event.pos
 

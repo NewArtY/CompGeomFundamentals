@@ -5,8 +5,13 @@ from renderers.shape_render import RenderManager
 
 class Scene(ABC):
     def __init__(self):
-        self.engine = None  # Ссылка на движок должна быть установлена при добавлении сцены
+        from core.engine import Engine
+
+        self.engine: Engine | None = None  # Ссылка на движок должна быть установлена при добавлении сцены
         self.renderer = RenderManager()
+        self.fast_forward_available = True
+        self.backward_available = True
+        self.name: str | None = None
 
     @abstractmethod
     def on_enter(self):
