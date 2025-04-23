@@ -1,5 +1,6 @@
 import pygame
 
+from core.scenes.fractal_scene import FractalScene
 from core.scenes.static_scene import StaticABScene
 from core.scenes.t_scene import MovingPointScene
 from core.scenes.test_scene import TestScene
@@ -28,13 +29,18 @@ class SceneManager:
         self.add_scene("trajectories", MovingPointScene())
         self.add_scene("transformation", TransformationScene())
         self.add_scene("test", TestScene())
+        self.add_scene("fractal", FractalScene())
+
         list_of_scenes = [val for val, _ in self.scenes.items()]
+
         self.set_scene(list_of_scenes[0])
+
         self.add_transition(list_of_scenes[0], list_of_scenes[1])
         self.add_transition(list_of_scenes[0], list_of_scenes[3], click_checker)
         self.add_transition(list_of_scenes[1], list_of_scenes[2])
-        self.add_transition(list_of_scenes[2], list_of_scenes[0])
+        self.add_transition(list_of_scenes[2], list_of_scenes[4])
         self.add_transition(list_of_scenes[3], list_of_scenes[1])
+        self.add_transition(list_of_scenes[4], list_of_scenes[0])
 
     def add_scene(self, name, scene: Scene):
         """Добавляет сцену в менеджер"""

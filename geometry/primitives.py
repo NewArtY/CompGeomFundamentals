@@ -4,6 +4,7 @@ from pygame.gfxdraw import pixel, line, arc
 
 from core.config import BACKGROUND
 from geometry.base import BaseGeoModel
+from geometry.utils import distance
 
 
 class Point(BaseGeoModel):
@@ -98,6 +99,78 @@ class Arc(BaseGeoModel):
         return self.coors[:2]
 
 
+class Fractal(Polyline):
+    def __init__(self, f_base: tuple[tuple[int | float, int | float]],
+                 fragment: tuple[tuple[int | float, int | float]], f_level: int,
+                 color: tuple[int, int, int] = (255, 255, 255),
+                 layer: str = BACKGROUND):
+        coors = self.fractalizator(f_base, fragment, f_level)
+        super().__init__(coors=coors, color=color, layer=layer)
+
+    @staticmethod
+    def fractalizator(f_base: tuple[tuple[int | float, int | float]],
+                      fragment: tuple[tuple[int | float, int | float]],
+                      f_level: int):
+        l_all = distance(f_base[0], f_base[1])
+        if f_base[0] != fragment[0] or f_base[1] != fragment[-1]:
+            fragment = Fractal.transform_polyline(f_base, fragment)
+        l_line = distance(fragment[0], fragment[1])
+        angels = ()
+        for point1, point2 in zip(fragment[:-1], fragment[1:]):
+            angels += (np.atan2(point2[1] - point1[1], point2[0] - point1[0]), )
+
+        n = len(angels)
+        k = l_line / l_all
+        l_f_line = k ** f_level * l_all
+        coors = (f_base[0], )
+        for i in range(n ** f_level):
+            fi = 0
+            for j in range(f_level):
+                fi += angels[i % n]
+                i //= n
+            coors += ((
+                coors[-1][0] + l_f_line * np.cos(fi),
+                coors[-1][1] + l_f_line * np.sin(fi)
+            ), )
+        return coors
+
+    @staticmethod
+    def transform_polyline(segment, polyline):
+        a, b = segment
+        p0 = polyline[0]
+        pn = polyline[-1]
+        # Вычисляем вектор исходного смещения ломаной (Qn)
+        qx = pn[0] - p0[0]
+        qy = pn[1] - p0[1]
+        # Вычисляем вектор целевого отрезка AB
+        dx = b[0] - a[0]
+        dy = b[1] - a[1]
+        # Вычисляем знаменатель для матрицы преобразования
+        denominator = qx ** 2 + qy ** 2
+        if denominator == 0:
+            return tuple(segment[0] for _ in range(len(polyline)))
+        # Элементы матрицы преобразования M
+        m00 = (qx * dx + qy * dy) / denominator
+        m01 = (-qx * dy + qy * dx) / denominator
+        m10 = (qx * dy - qy * dx) / denominator
+        m11 = (qx * dx + qy * dy) / denominator
+        # Применяем преобразование ко всем точкам ломаной
+        transformed = ()
+        for point in polyline:
+            x, y = point
+            # Смещаем точку относительно P0
+            x_shifted = x - p0[0]
+            y_shifted = y - p0[1]
+            # Применяем матрицу преобразования
+            new_x = m00 * x_shifted + m01 * y_shifted
+            new_y = m10 * x_shifted + m11 * y_shifted
+            # Переносим точку в целевую позицию A
+            new_x += a[0]
+            new_y += a[1]
+            transformed += ((new_x, new_y), )
+        return transformed
+
+
 class ShearedArc(Polyline):
     def __init__(self, center: tuple[int, int] = (0, 0),
                  r: int = 10, start_angle: int = 0, end_angle: int = 180,
@@ -120,3 +193,14 @@ class ShearedArc(Polyline):
                        )
                       for i in range(n + 1))
         return coors
+
+
+if __name__ == '__main__':
+    coors = Fractal.fractalizator(((0, 0), (1, 0)),
+                                  ((0, 0), (1/3, 0), (1/2, (1/12)**(1/2)), (2/3, 0), (1, 0)), 5
+                                  )
+    print(coors)
+    print(Fractal.transform_polyline(((-300, 0), (-100, 0)),
+                                     ((0, 0), (1/3, 0), (1/2, (1/12)**(1/2)), (2/3, 0), (1, 0))
+                                     )
+          )

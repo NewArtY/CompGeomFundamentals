@@ -1,5 +1,4 @@
 from core.engine import Engine
-from core.scene_manager import SceneManager
 
 
 def main():

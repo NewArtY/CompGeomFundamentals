@@ -1,7 +1,8 @@
 import numpy as np
 
 
-def distance(from_point: tuple[int, int], to_point: tuple[int, int]) -> float:
+def distance(from_point: tuple[int | float, int | float],
+             to_point: tuple[int | float, int | float]) -> float:
     """
     Euclidian distance from one point to another
     :param from_point: first dot of the interval

@@ -68,7 +68,8 @@ class BaseGeoModel(BaseModel):
     def __init__(self, *args, **kwargs):
         self.manager = RenderManager()
         self.manager.register(self, layer=kwargs.get('layer', BACKGROUND))
-        self.coors = self._generalized_mod(kwargs.get('coors'))
+        if kwargs.get('coors') is not None:
+            self.coors = self._generalized_mod(kwargs.get('coors'))
         super().__init__(color=kwargs.get('color'))
 
     def _generalized_mod(self, coors: tuple[int, int]):
