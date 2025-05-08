@@ -2,10 +2,11 @@ import random
 
 import numpy as np
 
+from core.config import MIDDLE
 from core.tools import TimedSpawner
 from geometry.base import BaseShapeModel
-from geometry.primitives import Polyline, Arc, Point, ShearedArc
-from geometry.utils import interpolation_with_length, get_step
+from geometry.primitives import Polyline, Arc, Point, ShearedArc, Polygon
+from geometry.utils import interpolation_with_length, get_step, distance
 
 
 class LetterA(BaseShapeModel):
@@ -219,3 +220,34 @@ class SpawnerABVChain(BaseShapeModel):
                 shape.shear(self.track[shape.current_state])
                 shape.current_state += 1
                 shape.current_state %= len(self.track)
+
+
+class Arrow(BaseShapeModel):
+    def __init__(self, arrow_start: tuple | np.ndarray, arrow_dir: tuple | np.ndarray, arrow_length: float | int = 10,
+                 color: tuple[int, int, int] = (255, 255, 255)):
+        dx, dy = arrow_length * arrow_dir[0], arrow_length * arrow_dir[1]
+        head_size = min(10, arrow_length // 4)
+        arrow_end = (arrow_start[0] + dx, arrow_start[1] + dy)
+        perp_dx = -arrow_dir[1]
+        perp_dy = arrow_dir[0]
+        left_point = (
+            arrow_end[0] - arrow_dir[0] * head_size + perp_dx * head_size / 2,
+            arrow_end[1] - arrow_dir[1] * head_size + perp_dy * head_size / 2
+        )
+        right_point = (
+            arrow_end[0] - arrow_dir[0] * head_size - perp_dx * head_size / 2,
+            arrow_end[1] - arrow_dir[1] * head_size - perp_dy * head_size / 2
+        )
+        shapes = (
+            Polyline(
+                coors=(arrow_start, arrow_end),
+                color=color,
+                layer=MIDDLE
+            ),
+            Polygon(
+                coors=(arrow_end, left_point, right_point),
+                color=color,
+                layer=MIDDLE
+            )
+        )
+        super().__init__(*shapes, color=color)
