@@ -79,9 +79,8 @@ class PerlinDynNoiseScene(Scene):
             v = 6 * dy ** 5 - 15 * dy ** 4 + 10 * dy ** 3
             perlin_octave = np.zeros_like(x_grid, dtype=np.float64)
             for i, j in product(range(2), repeat=2):
-                ix, iy = (ind_x + i) % self.vecs[n].shape[0], (ind_y + j) % self.vecs[n].shape[1]
-                dx_vec = dx - i if i == 0 else dx - i
-                dy_vec = dy - j if j == 0 else dy - j
+                ix, iy = ind_x + i, ind_y + j
+                dx_vec, dy_vec = dx - i, dy - j
                 gradients = self.vecs[n][ix, iy]
                 dot_products = gradients[:, :, 0] * dx_vec + gradients[:, :, 1] * dy_vec
                 weight_x = u if i == 1 else 1 - u

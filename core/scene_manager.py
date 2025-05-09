@@ -7,6 +7,7 @@ from core.scenes.perlin_frac_noise import PerlinFracNoiseScene
 from core.scenes.perlin_grid import PerlinGridScene
 from core.scenes.perlin_noise import PerlinNoiseScene
 from core.scenes.perlin_vec_frac_noise import PerlinVecFracNoiseScene
+from core.scenes.radial_perlin import RadialPerlinScene
 from core.scenes.static_scene import StaticABScene
 from core.scenes.t_scene import MovingPointScene
 from core.scenes.test_scene import TestScene
@@ -42,6 +43,7 @@ class SceneManager:
         self.add_scene("effective_perlin", PerlinVecFracNoiseScene())
         self.add_scene("perlin_dyn", PerlinDynamicGridScene())
         self.add_scene("perlin_dynamic_noise", PerlinDynNoiseScene())
+        self.add_scene("radial_perlin", RadialPerlinScene())
 
         list_of_scenes = [val for val, _ in self.scenes.items()]
 
@@ -59,7 +61,8 @@ class SceneManager:
         self.add_transition(list_of_scenes[7], list_of_scenes[8])
         self.add_transition(list_of_scenes[8], list_of_scenes[9])
         self.add_transition(list_of_scenes[9], list_of_scenes[10])
-        self.add_transition(list_of_scenes[10], list_of_scenes[0])
+        self.add_transition(list_of_scenes[10], list_of_scenes[11])
+        self.add_transition(list_of_scenes[11], list_of_scenes[0])
 
     def add_scene(self, name, scene: Scene):
         """Добавляет сцену в менеджер"""
