@@ -1,6 +1,8 @@
 import pygame
 
 from core.scenes.fractal_scene import FractalScene
+from core.scenes.perlin_dyn_grid import PerlinDynamicGridScene
+from core.scenes.perlin_dyn_noise import PerlinDynNoiseScene
 from core.scenes.perlin_frac_noise import PerlinFracNoiseScene
 from core.scenes.perlin_grid import PerlinGridScene
 from core.scenes.perlin_noise import PerlinNoiseScene
@@ -38,6 +40,8 @@ class SceneManager:
         self.add_scene("perlin_noise_static", PerlinNoiseScene())
         self.add_scene("perlin_frac_noise", PerlinFracNoiseScene())
         self.add_scene("effective_perlin", PerlinVecFracNoiseScene())
+        self.add_scene("perlin_dyn", PerlinDynamicGridScene())
+        self.add_scene("perlin_dynamic_noise", PerlinDynNoiseScene())
 
         list_of_scenes = [val for val, _ in self.scenes.items()]
 
@@ -47,12 +51,15 @@ class SceneManager:
         self.add_transition(list_of_scenes[0], list_of_scenes[3], click_checker)
         self.add_transition(list_of_scenes[1], list_of_scenes[2])
         self.add_transition(list_of_scenes[2], list_of_scenes[4])
+        self.add_transition(list_of_scenes[2], list_of_scenes[9], click_checker)
         self.add_transition(list_of_scenes[3], list_of_scenes[1])
         self.add_transition(list_of_scenes[4], list_of_scenes[5])
         self.add_transition(list_of_scenes[5], list_of_scenes[6])
         self.add_transition(list_of_scenes[6], list_of_scenes[7])
         self.add_transition(list_of_scenes[7], list_of_scenes[8])
-        self.add_transition(list_of_scenes[8], list_of_scenes[0])
+        self.add_transition(list_of_scenes[8], list_of_scenes[9])
+        self.add_transition(list_of_scenes[9], list_of_scenes[10])
+        self.add_transition(list_of_scenes[10], list_of_scenes[0])
 
     def add_scene(self, name, scene: Scene):
         """Добавляет сцену в менеджер"""

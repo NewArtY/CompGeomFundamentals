@@ -225,6 +225,7 @@ class SpawnerABVChain(BaseShapeModel):
 class Arrow(BaseShapeModel):
     def __init__(self, arrow_start: tuple | np.ndarray, arrow_dir: tuple | np.ndarray, arrow_length: float | int = 10,
                  color: tuple[int, int, int] = (255, 255, 255)):
+        self.arrow_start = arrow_start
         dx, dy = arrow_length * arrow_dir[0], arrow_length * arrow_dir[1]
         head_size = min(10, arrow_length // 4)
         arrow_end = (arrow_start[0] + dx, arrow_start[1] + dy)
@@ -251,3 +252,7 @@ class Arrow(BaseShapeModel):
             )
         )
         super().__init__(*shapes, color=color)
+
+    def rotate(self, alpha):
+        for shape in self.shapes:
+            shape.rotate_by_dot(alpha, self.arrow_start)

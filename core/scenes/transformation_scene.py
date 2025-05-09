@@ -40,6 +40,8 @@ class TransformationScene(Scene):
                 self.engine.scene_manager.next_scene()
             if event.key == pygame.K_b:
                 self.engine.scene_manager.previous_scene()
+            if event.key == pygame.K_t:
+                self.engine.scene_manager.next_scene(click='t')
         if event.type == pygame.MOUSEMOTION:
             self.mouse_x, self.mouse_y = event.pos
 
